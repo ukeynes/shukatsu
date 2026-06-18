@@ -24,10 +24,12 @@ body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;font-
 .badge.非言語{background:#10b981;color:#fff}
 .badge.英語{background:#f59e0b;color:#000}
 .q{font-size:14px;color:#cbd5e1;line-height:1.5;flex:1}
-.ans{margin-top:10px;padding:8px 12px;background:#0f172a;border-radius:8px;font-size:22px;font-weight:800;color:#38bdf8;letter-spacing:1px}
+.ans{margin-top:10px;padding:10px 12px;background:#0f172a;border-radius:8px;font-size:18px;font-weight:800;color:#38bdf8;line-height:1.5;word-break:break-word}
 .body{display:none;margin-top:8px}
 .sub{font-size:12px;color:#94a3b8;margin-bottom:4px;line-height:1.4}
 .memo{margin-top:6px;font-size:12px;color:#94a3b8;border-top:1px solid #334155;padding-top:6px}
+.num{margin-top:8px;font-size:11px;color:#64748b}
+.num b{color:#94a3b8;font-size:13px}
 .none{text-align:center;color:#475569;padding:40px 0;font-size:14px}
 mark{background:#facc15;color:#0f172a;border-radius:2px;padding:0 1px}
 </style>
@@ -65,6 +67,9 @@ function render(query){
   list.innerHTML = filtered.map((r,i)=>{
     const hasSub = r.sub && r.sub!='None';
     const hasMemo= r.memo && r.memo!='None';
+    const hasNum = r.a && r.a!='None' && r.a!='';
+    // 選択肢番号(r.a)はテストごとに順序が違うため、実際の答えの内容(memo)を主役で表示する
+    const mainAns = hasMemo ? r.memo : (hasNum ? r.a : '');
     return `<div class="card" onclick="this.classList.toggle('open')">
       <div class="head">
         <span class="badge ${r.type}">${r.type}</span>
@@ -72,8 +77,8 @@ function render(query){
       </div>
       <div class="body">
         ${hasSub?`<div class="sub">${highlight(r.sub,kw)}</div>`:''}
-        <div class="ans">${esc(r.a)||'—'}</div>
-        ${hasMemo?`<div class="memo">${highlight(r.memo,kw)}</div>`:''}
+        <div class="ans">${highlight(mainAns,kw)||'—'}</div>
+        ${hasNum?`<div class="num">参考の選択肢番号 <b>${esc(r.a)}</b>（※本番は順序が違うので上の内容で照合）</div>`:''}
       </div>
     </div>`;
   }).join('');
